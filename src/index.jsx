@@ -192,6 +192,7 @@ const Calendar = createReactClass({
 
 
       if (showWeeks){
+        const weekNum = this.getWeekNumber(new Date(year, month,  day - 1, 12, 0, 0, 0));
         week.unshift(<td
             key={7}
             style={{padding: this.props.cellPadding, fontSize: '0.8em', color: 'darkgrey'}}
