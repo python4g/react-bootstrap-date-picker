@@ -91,7 +91,8 @@ const Calendar = createReactClass({
     showTodayButton: PropTypes.bool,
     todayButtonLabel: PropTypes.string,
     roundedCorners: PropTypes.bool,
-    showWeeks: PropTypes.bool
+    showWeeks: PropTypes.bool,
+    disableWeekend: PropTypes.bool
   },
 
   handleClick(e) {
@@ -140,6 +141,7 @@ const Calendar = createReactClass({
         ? (firstDay.getDay() === 0 ? 6 : firstDay.getDay() - 1)
         : firstDay.getDay();
     const showWeeks = this.props.showWeeks;
+    const disableWeekend = this.props.disableWeekend;
 
     let monthLength = daysInMonth[month];
     if (month == 1) {
@@ -158,10 +160,12 @@ const Calendar = createReactClass({
           const date = new Date(year, month, day, 12, 0, 0, 0).toISOString();
           const beforeMinDate = minDate && Date.parse(date) < Date.parse(minDate);
           const afterMinDate = maxDate && Date.parse(date) > Date.parse(maxDate);
+          const weekNum = this.getWeekNumber(new Date(year, month,  day - 1, 12, 0, 0, 0));
+          const isDisabled = disableWeekend && (weekNum == 6 || weekNum == 0);
           let clickHandler = this.handleClick;
           const style = { cursor: 'pointer', padding: this.props.cellPadding, borderRadius: this.props.roundedCorners ? 5 : 0 };
 
-          if (beforeMinDate || afterMinDate) {
+          if (beforeMinDate || afterMinDate || isDisabled) {
             className = 'text-muted';
             clickHandler = null;
             style.cursor = 'default';
@@ -188,7 +192,6 @@ const Calendar = createReactClass({
 
 
       if (showWeeks){
-        const weekNum = this.getWeekNumber(new Date(year, month,  day - 1, 12, 0, 0, 0));
         week.unshift(<td
             key={7}
             style={{padding: this.props.cellPadding, fontSize: '0.8em', color: 'darkgrey'}}
@@ -302,6 +305,7 @@ export default createReactClass({
     customControl: PropTypes.object,
     roundedCorners: PropTypes.bool,
     showWeeks: PropTypes.bool,
+    disableWeekend: PropTypes.bool,
     children: PropTypes.oneOfType([
       PropTypes.arrayOf(PropTypes.node),
       PropTypes.node
@@ -337,7 +341,8 @@ export default createReactClass({
         width: '100%'
       },
       roundedCorners: false,
-      noValidate: false
+      noValidate: false,
+      disableWeekend: false
     };
   },
 
@@ -704,6 +709,7 @@ export default createReactClass({
             maxDate={this.props.maxDate}
             roundedCorners={this.props.roundedCorners}
             showWeeks={this.props.showWeeks}
+            disableWeekend={this.props.disableWeekend}
            />
         </Popover>
       </Overlay>
